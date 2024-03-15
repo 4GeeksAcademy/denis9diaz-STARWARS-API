@@ -59,10 +59,40 @@ def get_planets():
     }
     return jsonify(response_body), 200
 
-@app.route('/planet/<int:id>', methods=['GET'])
+@app.route('/people', methods=['GET'])
+def get_people():
+    people = People.query.all()
+    people_serialized_map = list(map(lambda x: x.serialize(), people))
+    response_body = {
+        "msg": "ok",
+        "result": people_serialized_map
+    }
+    return jsonify(response_body), 200
+
+@app.route('/starships', methods=['GET'])
+def get_starship():
+    starships = Starships.query.all()
+    starships_serialized_map = list(map(lambda x: x.serialize(), starships))
+    response_body = {
+        "msg": "ok",
+        "result": starships_serialized_map
+    }
+    return jsonify(response_body), 200
+
+@app.route('/planets/<int:id>', methods=['GET'])
 def get_single_planets(id):
     planet = Planets.query.get(id)
     return jsonify({"msg": "ok", "planet": planet.serialize()}), 200
+
+@app.route('/people/<int:id>', methods=['GET'])
+def get_single_person(id):
+    people = People.query.get(id)
+    return jsonify({"msg": "ok", "people": people.serialize()}), 200
+
+@app.route('/starships/<int:id>', methods=['GET'])
+def get_single_starship(id):
+    starships = Starships.query.get(id)
+    return jsonify({"msg": "ok", "planet": starships.serialize()}), 200
 
 @app.route('/planets', methods=['POST'])
 def add_planet():

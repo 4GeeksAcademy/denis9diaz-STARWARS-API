@@ -68,3 +68,4 @@ class Starships(db.Model):
             "name": self.name,
             "model": self.model
         }
+    

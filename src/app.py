@@ -9,6 +9,8 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
+from models import db, Planets
+from models import db, People
 #from models import Person
 
 app = Flask(__name__)
@@ -36,14 +38,59 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
+@app.route('/users', methods=['GET'])
 def handle_hello():
-
+    users = User.query.all()
+    users_serialized_map = list(map(lambda x: x.serialize(), users))
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+        "msg": "ok",
+        "result": users_serialized_map
     }
-
     return jsonify(response_body), 200
+
+@app.route('/planets', methods=['GET'])
+def get_planets():
+    planets = Planets.query.all()
+    planets_serialized_map = list(map(lambda x: x.serialize(), planets))
+    response_body = {
+        "msg": "ok",
+        "result": planets_serialized_map
+    }
+    return jsonify(response_body), 200
+
+@app.route('/planet/<int:id>', methods=['GET'])
+def get_single_planets(id):
+    planet = Planets.query.get(id)
+    return jsonify({"msg": "ok", "planet": planet.serialize()}), 200
+
+@app.route('/planets', methods=['POST'])
+def add_planet():
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify()
+    if "name" not in body:
+        return jsonify()
+    new_planet = Planets()
+    new_planet.name = body["name"]
+    new_planet.population = body["population"]
+    db.session.add(new_planet)
+    db.session.commit()
+    return jsonify("Planeta añadido"), 200
+
+@app.route('/people', methods=['POST'])
+def add_person():
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify()
+    if "name" not in body:
+        return jsonify()
+    new_person = People()
+    new_person.name = body["name"]
+    new_person.height = body["height"]
+    new_person.mass
+    db.session.add(new_person)
+    db.session.commit()
+    return jsonify("Persona añadida"), 200
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':

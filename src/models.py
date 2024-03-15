@@ -52,3 +52,19 @@ class People(db.Model):
             "height": self.height,
             "mass": self.mass
         }
+    
+class Starships(db.Model):
+    __tablename__ = "starships"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20), nullable=False)
+    model = db.Column(db.String(30))
+
+    def __repr__(self):
+        return f"Nave con id {self.id}, nombre {self.name} y modelo {self.model}"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "model": self.model
+        }

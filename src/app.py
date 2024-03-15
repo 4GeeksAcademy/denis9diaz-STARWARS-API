@@ -11,6 +11,7 @@ from admin import setup_admin
 from models import db, User
 from models import db, Planets
 from models import db, People
+from models import db, Starships
 #from models import Person
 
 app = Flask(__name__)
@@ -87,10 +88,24 @@ def add_person():
     new_person = People()
     new_person.name = body["name"]
     new_person.height = body["height"]
-    new_person.mass
+    new_person.mass = body["mass"]
     db.session.add(new_person)
     db.session.commit()
     return jsonify("Persona añadida"), 200
+
+@app.route('/starships', methods=['POST'])
+def add_starship():
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify()
+    if "name" not in body:
+        return jsonify()
+    new_starship = Starships()
+    new_starship.name = body["name"]
+    new_starship.model = body["model"]
+    db.session.add(new_starship)
+    db.session.commit()
+    return jsonify("Nave añadida"), 200
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':

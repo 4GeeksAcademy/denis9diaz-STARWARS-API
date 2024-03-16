@@ -1,4 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
 
 db = SQLAlchemy()
 
@@ -67,5 +69,75 @@ class Starships(db.Model):
             "id": self.id,
             "name": self.name,
             "model": self.model
+        }
+    
+class FavoriteCharacters(db.Model):
+    __tablename__ = "favorite-characters"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user_relationship = relationship(User)
+    character_id = db.Column(db.Integer, db.ForeignKey("people.id"))
+    character_relationship = relationship(People)
+
+    def __repr__(self):
+        return f"Personaje favorito con id {self.id} y nombre {self.character_relationship.name}"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.character_relationship.name,
+        }
+    
+class FavoritePlanets(db.Model):
+    __tablename__ = "favorite-planets"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user_relationship = relationship(User)
+    planet_id = db.Column(db.Integer, db.ForeignKey("planets.id"))
+    planet_relationship = relationship(Planets)
+
+    def __repr__(self):
+        return f"Planeta favorito con id {self.id} y nombre {self.planet_relationship.name}"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.planet_relationship.name,
+        }
+
+class FavoriteStarships(db.Model):
+    __tablename__ = "favorite-starships"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user_relationship = relationship(User)
+    starship_id = db.Column(db.Integer, db.ForeignKey("starships.id"))
+    starship_relationship = relationship(Starships)
+
+    def __repr__(self):
+        return f"Nave favorita con id {self.id} y nombre {self.starship_relationship.name}"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.starship_relationship.name,
+        }
+
+class UserFavorites(db.Model):
+    __tablename__ = "user-favorites"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    favorite_starship_id = db.Column(db.Integer, db.ForeignKey("favorite-starships.id"))
+    favorite_starship_relationship = relationship("FavoriteStarships")
+    favorite_planet_id = db.Column(db.Integer, db.ForeignKey("favorite-planets.id"))
+    favorite_planet_relationship = relationship("FavoritePlanets")
+    favorite_character_id = db.Column(db.Integer, db.ForeignKey("favorite-characters.id"))
+    favorite_character_relationship = relationship("FavoriteCharacters")
+
+    def __repr__(self):
+        return f"Usuario con id {self.id}"
+
+    def serialize(self):
+        return {
+            "id": self.id,
         }
     

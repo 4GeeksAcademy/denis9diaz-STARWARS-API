@@ -5,6 +5,7 @@ from sqlalchemy import ForeignKey
 db = SQLAlchemy()
 
 class User(db.Model):
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
@@ -121,23 +122,3 @@ class FavoriteStarships(db.Model):
             "id": self.id,
             "name": self.starship_relationship.name,
         }
-
-class UserFavorites(db.Model):
-    __tablename__ = "user-favorites"
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    favorite_starship_id = db.Column(db.Integer, db.ForeignKey("favorite-starships.id"))
-    favorite_starship_relationship = relationship("FavoriteStarships")
-    favorite_planet_id = db.Column(db.Integer, db.ForeignKey("favorite-planets.id"))
-    favorite_planet_relationship = relationship("FavoritePlanets")
-    favorite_character_id = db.Column(db.Integer, db.ForeignKey("favorite-characters.id"))
-    favorite_character_relationship = relationship("FavoriteCharacters")
-
-    def __repr__(self):
-        return f"Usuario con id {self.id}"
-
-    def serialize(self):
-        return {
-            "id": self.id,
-        }
-    

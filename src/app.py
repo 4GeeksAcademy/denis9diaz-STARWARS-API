@@ -43,7 +43,7 @@ def sitemap():
     return generate_sitemap(app)
 
 @app.route('/users', methods=['GET'])
-def handle_hello():
+def get_users():
     users = User.query.all()
     users_serialized_map = list(map(lambda x: x.serialize(), users))
     response_body = {
@@ -52,9 +52,38 @@ def handle_hello():
     }
     return jsonify(response_body), 200
 
-@app.route('/users/favorites', methods=['GET'])
-def user_favorites():
-    return jsonify(), 200
+@app.route('/users/favorites/<int:user_id>', methods=['GET'])
+def get_user_favorites(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"message": "Usuario no encontrado"}), 404
+
+    favorite_characters = FavoriteCharacters.query.filter(FavoriteCharacters.user_id == user_id).all()
+    favorite_planets = FavoritePlanets.query.filter(FavoritePlanets.user_id == user_id).all()
+    favorite_starships = FavoriteStarships.query.filter(FavoriteStarships.user_id == user_id).all()
+
+    favorite_characters_serialized = list(map(lambda fav: fav.serialize(), favorite_characters))
+    favorite_planets_serialized = list(map(lambda fav: fav.serialize(), favorite_planets))
+    favorite_starships_serialized = list(map(lambda fav: fav.serialize(), favorite_starships))
+
+    response_body = {
+        "user": user.serialize(),
+        "favorite_characters": favorite_characters_serialized,
+        "favorite_planets": favorite_planets_serialized,
+        "favorite_starships": favorite_starships_serialized
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/favorites', methods=['GET'])
+def get_favorites():
+    favorites = favorites.query.all()
+    favorites_serialized_map = list(map(lambda x: x.serialize(), favorites))
+    response_body = {
+        "msg": "ok",
+        "result": favorites_serialized_map
+    }
+    return jsonify(response_body), 200
 
 @app.route('/planets', methods=['GET'])
 def get_planets():
@@ -218,6 +247,83 @@ def delete_favorite_starship(id):
     db.session.delete(favorite_starship)
     db.session.commit()
     return jsonify({"message": "Nave favorita eliminada correctamente"}), 200
+
+@app.route('/planets/<int:id>', methods=['PUT'])
+def update_planet(id):
+    planet = Planets.query.get(id)
+    if not planet:
+        return jsonify({"message": "Planeta no encontrado"}), 404
+
+    body = request.get_json()
+    if "name" in body:
+        planet.name = body["name"]
+    if "population" in body:
+        planet.population = body["population"]
+
+    db.session.commit()
+    return jsonify({"message": "Planeta actualizado correctamente"}), 200
+
+@app.route('/planets/<int:id>', methods=['DELETE'])
+def delete_planet(id):
+    planet = Planets.query.get(id)
+    if not planet:
+        return jsonify({"message": "Planeta no encontrado"}), 404
+
+    db.session.delete(planet)
+    db.session.commit()
+    return jsonify({"message": "Planeta eliminado correctamente"}), 200
+
+@app.route('/starships/<int:id>', methods=['PUT'])
+def update_starship(id):
+    starship = Starships.query.get(id)
+    if not starship:
+        return jsonify({"message": "Nave espacial no encontrada"}), 404
+
+    body = request.get_json()
+    if "name" in body:
+        starship.name = body["name"]
+    if "model" in body:
+        starship.model = body["model"]
+
+    db.session.commit()
+    return jsonify({"message": "Nave espacial actualizada correctamente"}), 200
+
+@app.route('/starships/<int:id>', methods=['DELETE'])
+def delete_starship(id):
+    starship = Starships.query.get(id)
+    if not starship:
+        return jsonify({"message": "Nave espacial no encontrada"}), 404
+
+    db.session.delete(starship)
+    db.session.commit()
+    return jsonify({"message": "Nave espacial eliminada correctamente"}), 200
+
+@app.route('/people/<int:id>', methods=['PUT'])
+def update_person(id):
+    person = People.query.get(id)
+    if not person:
+        return jsonify({"message": "Persona no encontrada"}), 404
+
+    body = request.get_json()
+    if "name" in body:
+        person.name = body["name"]
+    if "height" in body:
+        person.height = body["height"]
+    if "mass" in body:
+        person.mass = body["mass"]
+
+    db.session.commit()
+    return jsonify({"message": "Persona actualizada correctamente"}), 200
+
+@app.route('/people/<int:id>', methods=['DELETE'])
+def delete_person(id):
+    person = People.query.get(id)
+    if not person:
+        return jsonify({"message": "Persona no encontrada"}), 404
+
+    db.session.delete(person)
+    db.session.commit()
+    return jsonify({"message": "Persona eliminada correctamente"}), 200
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':

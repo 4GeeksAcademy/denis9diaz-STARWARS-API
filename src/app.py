@@ -78,20 +78,6 @@ def get_user_favorites(user_id):
     return jsonify(response_body), 200
 
 
-@app.route('/favorites', methods=['GET'])
-def get_favorites():
-
-    favorites = favorites.query.all()
-    favorites_serialized_map = list(map(lambda x: x.serialize(), favorites))
-
-    response_body = {
-        "msg": "ok",
-        "result": favorites_serialized_map
-    }
-
-    return jsonify(response_body), 200
-
-
 @app.route('/planets', methods=['GET'])
 def get_planets():
 

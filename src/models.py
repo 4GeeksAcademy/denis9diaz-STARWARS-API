@@ -45,7 +45,7 @@ class People(db.Model):
     mass = db.Column(db.Integer)
 
     def __repr__(self):
-        return f"Persona con id {self.id}, nombre {self.name}, altura {self.height} y peso {self.height}"
+        return f"Personaje {self.id} de nombre {self.name}"
 
     def serialize(self):
         return {
@@ -62,7 +62,7 @@ class Starships(db.Model):
     model = db.Column(db.String(30))
 
     def __repr__(self):
-        return f"Nave con id {self.id}, nombre {self.name} y modelo {self.model}"
+        return f"Nave {self.id} de nombre {self.name}"
 
     def serialize(self):
         return {
@@ -85,7 +85,8 @@ class FavoriteCharacters(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.character_relationship.name,
+            "user_id" : self.user_id,
+            "character_ id": self.character_id
         }
     
 class FavoritePlanets(db.Model):
@@ -102,7 +103,8 @@ class FavoritePlanets(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.planet_relationship.name,
+            "user_id" : self.user_id,
+            "planet_id": self.planet_id
         }
 
 class FavoriteStarships(db.Model):
@@ -119,5 +121,6 @@ class FavoriteStarships(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.starship_relationship.name,
+            "user_id" : self.user_id,
+            "starship_ id": self.starship_id
         }
